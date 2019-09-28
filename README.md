@@ -1,4 +1,4 @@
-# num_todo_issue
+# nim_todo_issue
 
 Search TODO which is related to closed issue.
 
