@@ -17,7 +17,7 @@ nimble build -d:ssl
 ## Example
 
 ```
-$ nimble build -d:ssl && ./nim_todo_issue --token=d2604aebe8564a97f213c6d5cd7bdc790c2c7c0c jinjor/typed-parser tests/assets
+$ nimble build -d:ssl && ./nim_todo_issue jinjor/typed-parser tests/assets
   Verifying dependencies for nim_todo_issue@0.1.0
    Building nim_todo_issue/nim_todo_issue using c backend
 Fetched 3 issues from GitHub.
