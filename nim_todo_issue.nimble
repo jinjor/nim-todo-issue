@@ -2,7 +2,7 @@
 
 version       = "0.1.0"
 author        = "jinjor"
-description   = "A new awesome nimble package"
+description   = "Search TODOs related to closed issues"
 license       = "MIT"
 srcDir        = "src"
 bin           = @["nim_todo_issue"]

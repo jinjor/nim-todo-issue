@@ -1,6 +1,6 @@
 # nim_todo_issue
 
-Search TODO which is related to closed issue.
+Search TODOs related to closed issues.
 
 ## Build
 
@@ -11,13 +11,13 @@ nimble build -d:ssl
 ## Run
 
 ```
-./nim_todo_issue [--keyword=TODO] [--token=xxxxx] owner/repo [src_dir]
+./nim_todo_issue [--keyword=TODO] [--check] [--token=xxxxx] owner/repo [src_dir]
 ```
 
 ## Example
 
 ```
-$ nimble build -d:ssl && ./nim_todo_issue jinjor/typed-parser tests/assets
+$ nimble build && ./nim_todo_issue jinjor/typed-parser tests/assets
   Verifying dependencies for nim_todo_issue@0.1.0
    Building nim_todo_issue/nim_todo_issue using c backend
 Fetched 3 issues from GitHub.

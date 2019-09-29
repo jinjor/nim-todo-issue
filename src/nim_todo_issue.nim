@@ -8,21 +8,22 @@ import parseopt
 
 type
   Options = object
-    ownerAndRepo: string
-    dirPath: string
-    token: string
-    keyword: string
-  GitHubIssue = object
-    number: int
-    isPullRequest: bool
-    isOpen: bool
-  Issue = object
-    number: int
-    file: string
-    raw: string
+    ownerAndRepo*: string
+    dirPath*: string
+    token*: string
+    keyword*: string
+    check*: bool
+  GitHubIssue* = object
+    number*: int
+    isPullRequest*: bool
+    isOpen*: bool
+  Issue* = object
+    number*: int
+    file*: string
+    raw*: string
 
 
-proc getOptions: Options =
+proc getOptions*(args: string = ""): Options =
   proc writeHelp() =
     echo "Usage: nim_todo_issue [--keyword=TODO] [--token=xxxxx] owner/repo [src_dir]"
     quit 1
@@ -31,8 +32,9 @@ proc getOptions: Options =
   var dirPath: string
   var token: string
   var keyword: string
+  var check = false
 
-  var p = initOptParser()
+  var p = initOptParser(args)
 
   for kind, key, val in p.getopt():
     case kind
@@ -49,6 +51,8 @@ proc getOptions: Options =
         token = val
       of "keyword":
         keyword = val
+      of "check":
+        check = true
       else:
         writeHelp()
     of cmdEnd:
@@ -60,10 +64,10 @@ proc getOptions: Options =
   if keyword == "":
     keyword = "TODO"
   return Options(ownerAndRepo: ownerAndRepo, dirPath: dirPath, token: token,
-      keyword: keyword)
+      keyword: keyword, check: check)
 
 
-proc getAllGitHubIssues(ownerAndRepo: string, token: string): seq[GitHubIssue] =
+proc getAllGitHubIssues*(ownerAndRepo: string, token: string = ""): seq[GitHubIssue] =
   let client = newHttpClient()
   var currentPage = 1
   var lastPage: int
@@ -108,7 +112,7 @@ proc getAllGitHubIssues(ownerAndRepo: string, token: string): seq[GitHubIssue] =
   return issues
 
 
-proc searchIssues(keyword: string, path: string): seq[Issue] =
+proc searchIssues*(keyword: string, path: string): seq[Issue] =
   let regex = keyword & r".*#\d+"
   let output = execProcess("grep -rE \"" & regex & "\" " & path)
   var issues = newSeq[Issue]()
@@ -125,7 +129,9 @@ proc searchIssues(keyword: string, path: string): seq[Issue] =
   return issues
 
 
-proc report(githubIssues: seq[GitHubIssue], issues: seq[Issue]) =
+proc report*(githubIssues: seq[GitHubIssue], issues: seq[Issue],
+    check: bool): int =
+  var errors = 0
   for issue in issues:
     if issue.number > githubIssues.len:
       stdout.styledWrite(fgRed, "❔ #" & $issue.number &
@@ -138,10 +144,14 @@ proc report(githubIssues: seq[GitHubIssue], issues: seq[Issue]) =
     else:
       stdout.styledWrite(fgYellow, "❗️ #" & $issue.number, tipe,
           " [CLOSED] ", issue.raw, "\n")
+      errors += 1
+  if check:
+    return errors
 
-
-let
-  o = getOptions()
-  gitHubIssue = getAllGitHubIssues(o.ownerAndRepo, o.token)
-  issues = searchIssues(o.keyword, o.dirPath)
-report(gitHubIssue, issues)
+when isMainModule:
+  let
+    o = getOptions()
+    gitHubIssue = getAllGitHubIssues(o.ownerAndRepo, o.token)
+    issues = searchIssues(o.keyword, o.dirPath)
+    status = report(gitHubIssue, issues, o.check)
+  quit status
