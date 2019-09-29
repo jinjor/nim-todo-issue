@@ -1,0 +1,17 @@
+name: Release
+on: [release]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build artifact
+      uses: docker://nimlang/nim:1.0.0
+      with:
+        args: nimble build -d:ssl
+    - name: Upload artifacts
+      uses: skx/github-action-publish-binaries@release-0.7
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        args: 'nim_todo_issue'
