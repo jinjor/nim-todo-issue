@@ -5,7 +5,7 @@ Search TODOs related to closed issues.
 ## Build
 
 ```
-nimble build -d:ssl
+nimble build
 ```
 
 ## Run
