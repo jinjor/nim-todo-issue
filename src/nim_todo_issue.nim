@@ -113,7 +113,7 @@ proc getAllGitHubIssues*(ownerAndRepo: string, token: string = ""): seq[GitHubIs
 
 
 proc searchIssues*(keyword: string, path: string): seq[Issue] =
-  let regex = keyword & r".*#\d+"
+  let regex = keyword & r".*#[0-9]+"
   let output = execProcess("grep -rE \"" & regex & "\" " & path)
   var issues = newSeq[Issue]()
   for line in splitLines(output):
@@ -121,7 +121,7 @@ proc searchIssues*(keyword: string, path: string): seq[Issue] =
     if words.len <= 0:
       continue
     let file = words[0]
-    for issueNumber in findAll(line, re"(\d+)"): # TODO
+    for issueNumber in findAll(line, re"([0-9]+)"): # TODO
       let number: int = parseInt(issueNumber)
       if number <= 0:
         continue
